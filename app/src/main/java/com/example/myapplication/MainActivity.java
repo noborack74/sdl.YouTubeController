@@ -15,8 +15,6 @@ public class MainActivity extends AppCompatActivity {
     private WebView myWebView;
     private String accessUrl = "https://youtube.com/";
 
-    private Handler handler = new Handler();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
