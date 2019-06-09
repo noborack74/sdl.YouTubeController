@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.WindowManager;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -32,7 +33,15 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setDomStorageEnabled(true);
 
         //別のブラウザ開かないように
-        myWebView.setWebViewClient(new WebViewClient());
+        myWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                //ページ読み込みが完了してからJavascriptが利用可能になる
+                onScriptReady();
+            }
+        });
+
+        myWebView.setWebChromeClient(new WebChromeClient());
 
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
@@ -40,6 +49,13 @@ public class MainActivity extends AppCompatActivity {
 
         // url読み込み
         myWebView.loadUrl(accessUrl);
+
+    }
+
+    private void onScriptReady() {
+        //最初のスクリプト内関数実行
+        myWebView.loadUrl("javascript:setTimeout(() => {var videos = document.getElementsByClassName('large-media-item-thumbnail-container');videos[1].click();"+
+                "},10000);");
     }
 
 
