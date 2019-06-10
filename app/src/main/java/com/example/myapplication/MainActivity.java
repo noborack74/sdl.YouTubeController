@@ -4,21 +4,29 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final static String TAG = MainActivity.class.getSimpleName();
     private WebView myWebView;
     private String accessUrl = "https://youtube.com/";
+    //private String accessUrl = "https://m.youtube.com/watch?v=crp_ZWkR75c";
+    private int state;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        state = 0;
 
         //web view作成
         myWebView = findViewById(R.id.webview);
@@ -51,9 +59,114 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onScriptReady() {
+        //Toast.makeText(this,"関数実行中", Toast.LENGTH_LONG).show();
+
         //最初のスクリプト内関数実行
-        myWebView.loadUrl("javascript:setTimeout(() => {var videos = document.getElementsByClassName('large-media-item-thumbnail-container');videos[1].click();"+
-                "},10000);");
+
+
+
+
+
+
+
+
+    }
+
+    private void deside() {
+
+        myWebView.loadUrl("javascript:var videos = document.getElementsByClassName('large-media-item-thumbnail-container');videos[1].click();");
+    }
+
+
+    private void pause() {
+        myWebView.loadUrl("javascript:" +
+                "        var videoToPlay = document.getElementById(\"movie_player\");" +
+                "        videoToPlay.click();");
+    }
+
+    private void browse() {
+        int i = 0;
+        myWebView.loadUrl("javascript:var videos = document.getElementsByClassName('large-media-item-info cbox');alert(videos[0].style.background-color);");
+        //myWebView.loadUrl("javascript:alert('foo');");
+    }
+
+    private void home() {
+        myWebView.loadUrl("javascript: var homeButton = document.getElementById(\"home-icon\");" +
+                "    homeButton.click();");
+    }
+
+    private void trending() {
+        myWebView.loadUrl("javascript: var headButtons = document.getElementsByClassName(\"scbrr-tab center\");" +
+                "    headButtons[1].click();");
+
+    }
+
+    private void search() {
+        myWebView.loadUrl("javascript: var searchButton = document.getElementsByClassName(\"icon-button \")[1];" +
+                "    searchButton.click();");
+                //"    alert(searchButton[0]);");
+
+
+    }
+
+    private void inputText(String text) {
+        myWebView.loadUrl("javascript: setTimeout (() => {var textBox = document.getElementsByClassName(\"searchbox-input-wrapper\")[0].firstChild;" +
+                "    textBox.value = '"+ text +"';var searchButton = document.getElementsByClassName(\"icon-button \")[1];" +
+                "    searchButton.click();}, 3000);");
+
+
+
+    }
+
+
+
+    public void buttonClicked(View view) {
+        switch (state) {
+            case 0:
+                //browse();
+                search();
+                inputText("犬");
+
+
+                break;
+            case 1:
+                //deside();
+                //browse();
+                search();
+                break;
+            case 2:
+                //pause();
+                break;
+            case 3:
+                //home();
+                break;
+            case 4:
+                //trending();
+                break;
+            case 5:
+                //deside();
+                break;
+            case 6:
+                //pause();
+                break;
+            case 7:
+                //search();
+                break;
+            case 8:
+                //inputText();
+                break;
+
+            default:
+                //home();
+
+
+                //browse();
+
+                //play();
+                break;
+        }
+        state += 1;
+
     }
 
 
