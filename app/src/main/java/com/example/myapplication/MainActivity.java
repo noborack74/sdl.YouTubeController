@@ -4,7 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,11 +33,14 @@ import static android.Manifest.permission.RECORD_AUDIO;
 public class MainActivity extends AppCompatActivity {
 
     private TextView textView;
-    private static final int REQUEST_CODE = 12345;
     private Button button;
+    private final static String TAG = MainActivity.class.getSimpleName();
 
     private Intent intent;
     private SpeechRecognizer mRecognizer;
+    private Boolean isListening = false;
+
+
 
 
     @Override
@@ -45,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         //web view作成
         textView = findViewById(R.id.textView);
         button = findViewById(R.id.button);
+        button.setText("一時停止中");
 
 
 
@@ -58,14 +65,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
         intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.JAPAN.toString());
         intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
 
-        mRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
-        mRecognizer.setRecognitionListener(listener);
 
 
 
@@ -73,55 +77,19 @@ public class MainActivity extends AppCompatActivity {
 
     public void buttonClicked(View view) {
 
-
-
-        restartListeningService();
-        Log.d("button", "録音開始 ");
-
-
-        //mRecognizer.startListening(intent);
-
-
-        /*
-        //音声認識用のインテントを作成
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        //認識する言語を指定（この場合は日本語）
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.JAPANESE.toString());
-        //認識する候補数の指定
-        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 10);
-        //音声認識時に表示する案内を設定
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "話してください");
-
-        //音声認識を開始
-        startActivityForResult(intent, REQUEST_CODE);*/
-    }
-
-    //音声認識が終わると自動で呼び出されるメソッド
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-
-
-        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-
-            //data から音声認識の結果を取り出す（リスト形式で）
-            ArrayList<String> kekka = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-
-            //認識結果が一つ以上ある場合はテキストビューに結果を表示する
-            if (kekka.size() > 0) {
-                //一番最初にある認識結果を表示す
-                textView.setText(kekka.get(0));
-            } else {
-                //何らかの原因で音声認識に失敗した場合はエラーメッセージを表示
-
-                button.setText("0!");
-
-            }
+        if (isListening) {
+            button.setText("一時停止中");
+            stopListening();
+            isListening = false;
+        } else {
+            button.setText("聞いています");
+            restartListeningService();
+            isListening = true;
         }
+
+
+
     }
-
-
 
 
 
