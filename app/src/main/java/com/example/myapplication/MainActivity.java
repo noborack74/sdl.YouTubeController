@@ -72,10 +72,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void deside() {
+    private void desideHome(int i) {
 
-        myWebView.loadUrl("javascript:var videos = document.getElementsByClassName('large-media-item-thumbnail-container');videos[1].click();");
+        myWebView.loadUrl("javascript:var videos = document.getElementsByClassName('large-media-item-thumbnail-container');" +
+                "videos["+ i + "].click();");
     }
+
+    private void desideRelatedandSearch(int i) {
+
+        myWebView.loadUrl("javascript:var videos = document.getElementsByClassName('compact-media-item-image');" +
+                "videos["+ i + "].click();");
+                //"alert(videos[" + i + "])");
+    }
+
+
 
 
     private void pause() {
@@ -112,59 +122,92 @@ public class MainActivity extends AppCompatActivity {
     private void inputText(String text) {
         myWebView.loadUrl("javascript: setTimeout (() => {var textBox = document.getElementsByClassName(\"searchbox-input-wrapper\")[0].firstChild;" +
                 "    textBox.value = '"+ text +"';var searchButton = document.getElementsByClassName(\"icon-button \")[1];" +
-                "    searchButton.click();}, 3000);");
+                "    searchButton.click();}, 10);");
 
 
 
     }
 
+    private void scrollHome(int i) {
+        myWebView.loadUrl("javascript:var videos = document.getElementsByClassName('large-media-item-thumbnail-container');" +
+                "videos["+ i + "].scrollIntoView({" +
+                "        behavior: 'smooth'," +
+                "        block: 'start'," +
+                "        inline: 'nearest'" +
+                "    });");
+    }
+
+    private void scrollRelatedandSearch(int i) {
+        myWebView.loadUrl("javascript:var videos = document.getElementsByTagName('ytm-compact-video-renderer');" +
+                "videos["+ i + "].scrollIntoView({" +
+                "        behavior: 'smooth'," +
+                "        block: 'nearest'," +
+                "        inline: 'nearest'" +
+                "    });");
+    }
+
+
 
 
     public void buttonClicked(View view) {
+        /*
         switch (state) {
             case 0:
                 //browse();
                 search();
                 inputText("犬");
+                //scrollHome(state);
 
 
                 break;
             case 1:
-                //deside();
+
+                scrollRelatedandSearch(0);
                 //browse();
-                search();
+                //search();
                 break;
             case 2:
+                scrollRelatedandSearch(1);
+
                 //pause();
                 break;
             case 3:
+                desideRelatedandSearch(1);
+
                 //home();
                 break;
             case 4:
+                pause();
                 //trending();
                 break;
             case 5:
+                scrollRelatedandSearch(0);
                 //deside();
                 break;
             case 6:
+                scrollRelatedandSearch(1);
                 //pause();
                 break;
             case 7:
+                desideRelatedandSearch(1);
                 //search();
                 break;
             case 8:
+                pause();
                 //inputText();
                 break;
 
             default:
-                //home();
+                home();
 
 
                 //browse();
 
                 //play();
                 break;
-        }
+        }*/
+        scrollHome(state);
+
         state += 1;
 
     }
