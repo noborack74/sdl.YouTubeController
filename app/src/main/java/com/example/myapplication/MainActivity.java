@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     //private String accessUrl = "https://m.youtube.com/watch?v=crp_ZWkR75c";
     private int state;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,19 +57,17 @@ public class MainActivity extends AppCompatActivity {
         // url読み込み
         myWebView.loadUrl(accessUrl);
 
+
     }
 
     private void onScriptReady() {
-        //Toast.makeText(this,"関数実行中", Toast.LENGTH_LONG).show();
-
-        //最初のスクリプト内関数実行
-
-
-
-
-
-
-
+        myWebView.loadUrl("javascript:(function() {" +
+                "var parent = document.getElementsByTagName('head').item(0);" +
+                "var style = document.createElement('style');" +
+                "style.type = 'text/css';" +
+                "style.innerHTML = '.selected{background-color:hotpink;}';" +
+                "parent.appendChild(style)" +
+                "})()");
 
     }
 
@@ -82,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
         myWebView.loadUrl("javascript:var videos = document.getElementsByClassName('compact-media-item-image');" +
                 "videos["+ i + "].click();");
-                //"alert(videos[" + i + "])");
+
     }
 
 
@@ -94,10 +93,20 @@ public class MainActivity extends AppCompatActivity {
                 "        videoToPlay.click();");
     }
 
-    private void browse() {
-        int i = 0;
-        myWebView.loadUrl("javascript:var videos = document.getElementsByClassName('large-media-item-info cbox');alert(videos[0].style.background-color);");
-        //myWebView.loadUrl("javascript:alert('foo');");
+    private void browse(int i) {
+
+        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";})()");
+        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('item');videos[" + i + "].className=\"selected\";})()");
+
+
+    }
+
+    private void browseRelatedandSearch(int i) {
+
+        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');videos[0].className=\"compact-media-item\";})()");
+        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('compact-media-item');videos[" + i + "].className=\"selected\";})()");
+
+
     }
 
     private void home() {
@@ -138,12 +147,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void scrollRelatedandSearch(int i) {
-        myWebView.loadUrl("javascript:var videos = document.getElementsByTagName('ytm-compact-video-renderer');" +
+
+        myWebView.loadUrl("javascript:window.scrollBy(50);var videos = document.getElementsByTagName('ytm-compact-video-renderer');" +
                 "videos["+ i + "].scrollIntoView({" +
                 "        behavior: 'smooth'," +
                 "        block: 'nearest'," +
                 "        inline: 'nearest'" +
                 "    });");
+
+
+
     }
 
 
@@ -206,8 +219,9 @@ public class MainActivity extends AppCompatActivity {
                 //play();
                 break;
         }*/
-        scrollHome(state);
-
+        //scrollHome(state);
+        browseRelatedandSearch(state);
+        scrollRelatedandSearch(state);
         state += 1;
 
     }
