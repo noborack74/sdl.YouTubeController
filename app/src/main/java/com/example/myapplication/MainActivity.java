@@ -146,12 +146,25 @@ public class MainActivity extends AppCompatActivity {
                 "    });");
     }
 
-    private void scrollRelatedandSearch(int i) {
+    private void scrollRelated(int i) {
 
-        myWebView.loadUrl("javascript:window.scrollBy(50);var videos = document.getElementsByTagName('ytm-compact-video-renderer');" +
+        myWebView.loadUrl("javascript:var videos = document.getElementsByTagName('ytm-compact-video-renderer');" +
                 "videos["+ i + "].scrollIntoView({" +
                 "        behavior: 'smooth'," +
                 "        block: 'nearest'," +
+                "        inline: 'nearest'" +
+                "    });");
+
+
+
+    }
+
+    private void scrollSearch(int i) {
+
+        myWebView.loadUrl("javascript:var videos = document.getElementsByTagName('ytm-compact-video-renderer');" +
+                "videos["+ i + "].scrollIntoView({" +
+                "        behavior: 'smooth'," +
+                "        block: 'center'," +
                 "        inline: 'nearest'" +
                 "    });");
 
@@ -221,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
         }*/
         //scrollHome(state);
         browseRelatedandSearch(state);
-        scrollRelatedandSearch(state);
+        scrollSearch(state);
         state += 1;
 
     }
