@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognitionListener;
@@ -44,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     private String accessUrl = "https://youtube.com/";
     private int mIndex;
     private String pageInfo = "home";
+
+    private AudioManager mAudioManager;
 
 
     @Override
@@ -255,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 音声認識を再開する
     public void restartListeningService() {
+
         stopListening();
         startListening();
     }
@@ -449,8 +453,7 @@ public class MainActivity extends AppCompatActivity {
                     desideHome(mIndex);
                     mIndex = 0;
                     pageInfo = "related";
-                    browseHome(mIndex);
-                    scrollHome(mIndex);
+
                 }
                 break;
             case "trending":
