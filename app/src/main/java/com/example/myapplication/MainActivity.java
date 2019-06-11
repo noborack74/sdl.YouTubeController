@@ -16,6 +16,8 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.util.Log;
 import android.view.View;
@@ -36,7 +38,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button button;
+    private MenuItem button;
     private final static String TAG = MainActivity.class.getSimpleName();
     private Intent intent;
     private SpeechRecognizer mRecognizer;
@@ -54,9 +56,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 音声設定
-        button = findViewById(R.id.button);
-        button.setText("一時停止中");
+
 
         if (ContextCompat.checkSelfPermission(this, RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, RECORD_AUDIO)) {
@@ -108,21 +108,35 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
-    public void buttonClicked(View view) {
-
-        if (isListening) {
-            button.setText("一時停止中");
-            stopListening();
-            isListening = false;
-        } else {
-            button.setText("聞いています");
-            restartListeningService();
-            isListening = true;
-        }
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionsMenu");
+        getMenuInflater().inflate(R.menu.main, menu);
+        button = menu.findItem(R.id.menu_voice);
+        return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "onOptionsItemSelected");
+        switch (item.getItemId()) {
+            case R.id.menu_voice:
+                if (isListening) {
+                    button.setTitle("一時停止中");
+                    stopListening();
+                    isListening = false;
+                } else {
+                    button.setTitle("聞いています");
+                    restartListeningService();
+                    isListening = true;
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
 
 
 
