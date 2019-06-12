@@ -16,10 +16,13 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -36,7 +39,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button button;
+    private MenuItem button;
     private final static String TAG = MainActivity.class.getSimpleName();
     private Intent intent;
     private SpeechRecognizer mRecognizer;
@@ -45,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private String accessUrl = "https://youtube.com/";
     private int mIndex;
     private String pageInfo = "home";
+    private boolean searching = false;
+    private boolean isFirstTime = true;
 
     private AudioManager mAudioManager;
 
@@ -54,9 +59,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 音声設定
-        button = findViewById(R.id.button);
-        button.setText("一時停止中");
+
 
         if (ContextCompat.checkSelfPermission(this, RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, RECORD_AUDIO)) {
@@ -96,6 +99,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //JavaScript interface 追加
+        myWebView.addJavascriptInterface(this, "myController");
+
         myWebView.setWebChromeClient(new WebChromeClient());
 
         getWindow().setFlags(
@@ -108,21 +114,39 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
-    public void buttonClicked(View view) {
-
-        if (isListening) {
-            button.setText("一時停止中");
-            stopListening();
-            isListening = false;
-        } else {
-            button.setText("聞いています");
-            restartListeningService();
-            isListening = true;
-        }
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionsMenu");
+        getMenuInflater().inflate(R.menu.main, menu);
+        button = menu.findItem(R.id.menu_voice);
+        return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "onOptionsItemSelected");
+        switch (item.getItemId()) {
+            case R.id.menu_voice:
+                if (isListening) {
+                    button.setTitle("一時停止中");
+                    stopListening();
+                    isListening = false;
+                } else {
+                    button.setTitle("聞いています");
+                    restartListeningService();
+                    isListening = true;
+
+                    //checkPageInfo();
+
+
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
 
 
 
@@ -265,15 +289,17 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void onScriptReady() {
-        myWebView.loadUrl("javascript:(function() {" +
-                "var parent = document.getElementsByTagName('head').item(0);" +
-                "var style = document.createElement('style');" +
-                "style.type = 'text/css';" +
-                "style.innerHTML = '.selected{background-color:hotpink;}';" +
-                "parent.appendChild(style)" +
-                "})()");
-        browseHome(0);
-        scrollHome(0);
+        if (isFirstTime) {
+            myWebView.loadUrl("javascript:(function() {" +
+                    "var parent = document.getElementsByTagName('head').item(0);" +
+                    "var style = document.createElement('style');" +
+                    "style.type = 'text/css';" +
+                    "style.innerHTML = '.selected{background-color:hotpink;}';" +
+                    "parent.appendChild(style)" +
+                    "})()");
+            loadHome();
+            isFirstTime = false;
+        }
 
     }
 
@@ -283,9 +309,16 @@ public class MainActivity extends AppCompatActivity {
                 "videos["+ i + "].click();");
     }
 
-    private void desideRelatedandSearch(int i) {
+    private void desideRelated(int i) {
 
-        myWebView.loadUrl("javascript:var videos = document.getElementsByClassName('compact-media-item-image');" +
+        myWebView.loadUrl("javascript:var videos = document.querySelectorAll('ytm-watch .compact-media-item-image');" +
+                "videos["+ i + "].click();");
+
+    }
+
+    private void desideSearch(int i) {
+
+        myWebView.loadUrl("javascript:var videos = document.querySelectorAll('ytm-search .compact-media-item-image');" +
                 "videos["+ i + "].click();");
 
     }
@@ -307,10 +340,85 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void browseRelatedandSearch(int i) {
+    private void loadHome() {
+
+        myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
+                "var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";" +
+                "}, 1000)})()");
+        myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
+                "var videos = document.getElementsByClassName('item');videos[0].className=\"selected\";" +
+                "}, 1000)})()");
+        //myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('item');videos[0].className=\"selected\";})()");
+
+        myWebView.loadUrl("javascript:setTimeout(() => {var videos = document.getElementsByClassName('large-media-item-thumbnail-container');" +
+                "videos[0].scrollIntoView({" +
+                "behavior: 'smooth'," +
+                "block: 'start'," +
+                "inline: 'nearest'" +
+                "});}, 1000);");
+
+
+
+
+
+        //myWebView.loadUrl("javascript:window.onload = () => {var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";};");
+        //myWebView.loadUrl("javascript:window.onload = () => {var videos = document.getElementsByClassName('item');videos[0].className=\"selected\";};");
+
+
+    }
+
+    private void browseRelated(int i) {
 
         myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');videos[0].className=\"compact-media-item\";})()");
-        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('compact-media-item');videos[" + (i + 1) + "].className=\"selected\";})()");
+        myWebView.loadUrl("javascript:(() => {var videos = document.querySelectorAll('ytm-watch .compact-media-item');videos[" + i + "].className=\"selected\";})()");
+
+
+    }
+
+    private void browseSearch(int i) {
+
+        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');videos[0].className=\"compact-media-item\";})()");
+
+        myWebView.loadUrl("javascript:(() => {var videos = document.querySelectorAll('ytm-search .compact-media-item');videos[" + i + "].className=\"selected\";})()");
+
+
+    }
+
+    private void loadSearch() {
+
+        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";})()");
+
+        myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
+                "var videos = document.querySelectorAll('ytm-search .compact-media-item');videos[0].className=\"selected\";" +
+                "}, 1000)})();");
+        //myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('item');videos[0].className=\"selected\";})()");
+
+        myWebView.loadUrl("javascript:setTimeout(() => {var videos = document.querySelectorAll('ytm-search .compact-media-item')" +
+                "videos[0].scrollIntoView({" +
+                "behavior: 'smooth'," +
+                "block: 'start'," +
+                "inline: 'nearest'" +
+                "});}, 1000);");
+
+
+    }
+
+    private void loadRelated() {
+
+        //myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
+          //      "var videos = document.getElementsByClassName('compact-media-item');videos[0].className=\"selected\";" +
+            //    "}, 2000)})();");
+        myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
+                "var videos = document.querySelectorAll('ytm-watch .compact-media-item');videos[0].className=\"selected\";" +
+                "}, 1000);})()");
+
+        myWebView.loadUrl("javascript:setTimeout(() => {var videos = var videos = document.querySelectorAll('ytm-watch .compact-media-item');" +
+                "videos[0].scrollIntoView({" +
+                "behavior: 'smooth'," +
+                "block: 'nearest'," +
+                "inline: 'nearest'" +
+                "});}, 1000);");
+
 
 
     }
@@ -334,9 +442,26 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void searchFromSearchResult() {
+        myWebView.loadUrl("javascript: var searchButton = document.getElementsByClassName(\"icon-button \")[2];" +
+                "    searchButton.click();");
+        //"    alert(searchButton[0]);");
+
+
+    }
+
     private void inputText(String text) {
         myWebView.loadUrl("javascript: setTimeout (() => {var textBox = document.getElementsByClassName(\"searchbox-input-wrapper\")[0].firstChild;" +
                 "    textBox.value = '"+ text +"';var searchButton = document.getElementsByClassName(\"icon-button \")[1];" +
+                "    searchButton.click();}, 10);");
+
+
+
+    }
+
+    private void inputTextFromSearchResult(String text) {
+        myWebView.loadUrl("javascript: setTimeout (() => {var textBox = document.getElementsByClassName(\"searchbox-input-wrapper\")[0].firstChild;" +
+                "    textBox.value = '"+ text +"';var searchButton = document.getElementsByClassName(\"icon-button \")[2];" +
                 "    searchButton.click();}, 10);");
 
 
@@ -352,95 +477,118 @@ public class MainActivity extends AppCompatActivity {
                 "    });");
     }
 
-    private void scrollRelatedandSearch(int i) {
+    private void scrollRelated(int i) {
 
-        myWebView.loadUrl("javascript:var videos = document.getElementsByTagName('ytm-compact-video-renderer');" +
-                "videos["+ (i + 1) + "].scrollIntoView({" +
+        myWebView.loadUrl("javascript:var videos = document.querySelectorAll('ytm-watch .compact-media-item');" +
+                "videos["+ i + "].scrollIntoView({" +
                 "        behavior: 'smooth'," +
                 "        block: 'nearest'," +
                 "        inline: 'nearest'" +
                 "    });");
+    }
 
+    private void scrollSearch(int i) {
+
+        myWebView.loadUrl("javascript:var videos = document.querySelectorAll('ytm-search .compact-media-item');" +
+                "videos["+ i + "].scrollIntoView({" +
+                "        behavior: 'smooth'," +
+                "        block: 'nearest'," +
+                "        inline: 'nearest'" +
+                "    });");
+    }
+
+    private void checkPageInfo() {
+        String tmpInfo = pageInfo;
+        myWebView.loadUrl("javascript:(() => {" +
+                "    var title = document.title;" +
+                "    var watchTag = document.getElementsByTagName(\"ytm-watch\");" +
+                "    var searchTag = document.getElementsByTagName(\"ytm-search\");" +
+                "    if (title.includes(\"ホーム\")) {" +
+                "        window.myController.changePageInfo(\"home\");" +
+                "    } else if (title.includes(\"急上昇\")) {" +
+                "        window.myController.changePageInfo(\"trending\");" +
+                "    } else if (typeof watchTag[0] === \"undefined\") {\n" +
+                "        window.myController.changePageInfo(\"searchResult\");" +
+                "    } else if (typeof searchTag[0] === \"undefined\") {" +
+                "        window.myController.changePageInfo(\"related\");" +
+                "    } else {" +
+                "        window.myController.changePageInfo(\"home\");" +
+                "        window.myController.home();" +
+                "    }})()");
 
 
     }
 
+    private void clearMarkerLarge() {
+        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";})()");
+    }
+
+    private void clearMarkerSmall() {
+        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');videos[0].className=\"compact-media-item\";})()");
+    }
 
 
 
-    /*
-    public void buttonClicked(View view) {
-        int state = mIndex;
+    @JavascriptInterface
+    public void changePageInfo(String info) {
+        if (!pageInfo.equals(info)) {
+            mIndex = 0;
+            pageInfo = info;
 
-        switch (state) {
-            case 0:
-                //browse();
-                search();
-                inputText("犬");
-                //scrollHome(state);
-                //desideHome(0);
-
-
-                break;
-            case 1:
-
-                scrollRelatedandSearch(0);
-                browseRelatedandSearch(0);
-                //browse();
-                //search();
-                break;
-            case 2:
-                scrollRelatedandSearch(1);
-                browseRelatedandSearch(1);
-
-                //pause();
-                break;
-            case 3:
-                desideRelatedandSearch(1);
-
-                //home();
-                break;
-            case 4:
-                pause();
-                //trending();
-                break;
-            case 5:
-                scrollRelatedandSearch(0);
-                //deside();
-                break;
-            case 6:
-                scrollRelatedandSearch(1);
-                //pause();
-                break;
-            case 7:
-                desideRelatedandSearch(1);
-                //search();
-                break;
-            case 8:
-                pause();
-                //inputText();
-                break;
-
-            default:
-                home();
-
-
-                //browse();
-
-                //play();
-                break;
         }
-        //scrollHome(state);
+        //myWebView.loadUrl("javascript:");
 
-        //scrollRelatedandSearch(state);
-        mIndex += 1;
-
-    }*/
+    }
 
 
     private void handleCommands(String command) {
+        if (searching) {
+            if (!pageInfo.equals("searchResult")) {
+                inputText(command);
+
+            } else {
+                inputTextFromSearchResult(command);
+            }
+            searching = false;
+            pageInfo = "searchResult";
+            mIndex = 0;
+            loadSearch();
+
+            return;
+        }
+
         switch (pageInfo) {
             case "home":
+                if ((command.contains("上") || command.contains("うえ"))
+                        && mIndex > 0 && !command.contains("急上昇")) {
+                    mIndex -= 1;
+                    browseHome(mIndex);
+                    scrollHome(mIndex);
+                } else if (command.contains("下") || command.contains("した")) {
+                    mIndex += 1;
+                    browseHome(mIndex);
+                    scrollHome(mIndex);
+
+                } else if (command.contains("再生") || command.contains("さいせい")) {
+                    desideHome(mIndex);
+                    clearMarkerLarge();
+                    mIndex = 0;
+                    pageInfo = "related";
+                    loadRelated();
+
+                } else if (command.contains("急上昇") || command.contains("きゅうじょうしょう")) {
+                    trending();
+                    clearMarkerLarge();
+                    mIndex = 0;
+                    pageInfo = "trending";
+                    loadHome();
+                } else if (command.contains("検索") || command.contains("けんさく")) {
+                    search();
+                    clearMarkerLarge();
+                    searching = true;
+                }
+                break;
+            case "trending":
                 if ((command.contains("上") || command.contains("うえ")) && mIndex > 0) {
                     mIndex -= 1;
                     browseHome(mIndex);
@@ -449,18 +597,83 @@ public class MainActivity extends AppCompatActivity {
                     mIndex += 1;
                     browseHome(mIndex);
                     scrollHome(mIndex);
+
                 } else if (command.contains("再生") || command.contains("さいせい")) {
                     desideHome(mIndex);
+                    clearMarkerLarge();
                     mIndex = 0;
                     pageInfo = "related";
+                    loadRelated();
 
+                } else if (command.contains("ホーム") || command.contains("ほーむ")) {
+                    home();
+                    clearMarkerLarge();
+                    mIndex = 0;
+                    pageInfo = "home";
+                    loadHome();
+                } else if (command.contains("検索") || command.contains("けんさく")) {
+                    search();
+                    clearMarkerLarge();
+                    searching = true;
                 }
                 break;
-            case "trending":
-                break;
             case "searchResult":
+                if ((command.contains("上") || command.contains("うえ")) && mIndex > 0) {
+                    mIndex -= 1;
+                    browseSearch(mIndex);
+                    scrollSearch(mIndex);
+                } else if (command.contains("下") || command.contains("した")) {
+                    mIndex += 1;
+                    browseSearch(mIndex);
+                    scrollSearch(mIndex);
+
+                } else if (command.contains("再生") || command.contains("さいせい")) {
+                    desideSearch(mIndex);
+                    clearMarkerSmall();
+                    mIndex = 0;
+                    pageInfo = "related";
+                    loadRelated();
+
+                } else if (command.contains("ホーム") || command.contains("ほーむ")) {
+                    home();
+                    clearMarkerSmall();
+                    mIndex = 0;
+                    pageInfo = "home";
+                    loadHome();
+                } else if (command.contains("検索") || command.contains("けんさく")) {
+                    searchFromSearchResult();
+                    clearMarkerSmall();
+                    searching = true;
+                }
                 break;
             case "related":
+                if ((command.contains("上") || command.contains("うえ")) && mIndex > 0) {
+                    mIndex -= 1;
+                    browseRelated(mIndex);
+                    scrollRelated(mIndex);
+                } else if (command.contains("下") || command.contains("した")) {
+                    mIndex += 1;
+                    browseRelated(mIndex);
+                    scrollRelated(mIndex);
+
+                } else if (command.contains("再生") || command.contains("さいせい")) {
+                    desideRelated(mIndex);
+                    clearMarkerSmall();
+                    mIndex = 0;
+                    pageInfo = "related";
+                    loadRelated();
+
+                } else if (command.contains("ホーム") || command.contains("ほーむ")) {
+                    home();
+                    clearMarkerSmall();
+                    mIndex = 0;
+                    pageInfo = "home";
+                    loadHome();
+                } else if (command.contains("検索") || command.contains("けんさく")) {
+                    search();
+                    clearMarkerSmall();
+                    searching = true;
+                }
                 break;
             default:
                 throw new RuntimeException("invalid page info");
