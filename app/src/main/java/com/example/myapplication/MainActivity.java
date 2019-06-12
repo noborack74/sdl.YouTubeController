@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private int mIndex;
     private String pageInfo = "home";
     private boolean searching = false;
+    private boolean isFirstTime = true;
 
     private AudioManager mAudioManager;
 
@@ -134,7 +135,9 @@ public class MainActivity extends AppCompatActivity {
                     button.setTitle("聞いています");
                     restartListeningService();
                     isListening = true;
-                    checkPageInfo();
+
+                    //checkPageInfo();
+
 
                 }
                 return true;
@@ -286,15 +289,17 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void onScriptReady() {
-        myWebView.loadUrl("javascript:(function() {" +
-                "var parent = document.getElementsByTagName('head').item(0);" +
-                "var style = document.createElement('style');" +
-                "style.type = 'text/css';" +
-                "style.innerHTML = '.selected{background-color:hotpink;}';" +
-                "parent.appendChild(style)" +
-                "})()");
-        browseHome(0);
-        scrollHome(0);
+        if (isFirstTime) {
+            myWebView.loadUrl("javascript:(function() {" +
+                    "var parent = document.getElementsByTagName('head').item(0);" +
+                    "var style = document.createElement('style');" +
+                    "style.type = 'text/css';" +
+                    "style.innerHTML = '.selected{background-color:hotpink;}';" +
+                    "parent.appendChild(style)" +
+                    "})()");
+            loadHome();
+            isFirstTime = false;
+        }
 
     }
 
@@ -304,9 +309,16 @@ public class MainActivity extends AppCompatActivity {
                 "videos["+ i + "].click();");
     }
 
-    private void desideRelatedandSearch(int i) {
+    private void desideRelated(int i) {
 
-        myWebView.loadUrl("javascript:var videos = document.getElementsByClassName('compact-media-item-image');" +
+        myWebView.loadUrl("javascript:var videos = document.querySelectorAll('ytm-watch .compact-media-item-image');" +
+                "videos["+ i + "].click();");
+
+    }
+
+    private void desideSearch(int i) {
+
+        myWebView.loadUrl("javascript:var videos = document.querySelectorAll('ytm-search .compact-media-item-image');" +
                 "videos["+ i + "].click();");
 
     }
@@ -329,6 +341,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadHome() {
+
         myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
                 "var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";" +
                 "}, 1000)})()");
@@ -343,47 +356,71 @@ public class MainActivity extends AppCompatActivity {
                 "block: 'start'," +
                 "inline: 'nearest'" +
                 "});}, 1000);");
+
+
+
+
+
+        //myWebView.loadUrl("javascript:window.onload = () => {var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";};");
+        //myWebView.loadUrl("javascript:window.onload = () => {var videos = document.getElementsByClassName('item');videos[0].className=\"selected\";};");
+
+
     }
 
-    private void browseRelatedandSearch(int i) {
+    private void browseRelated(int i) {
 
         myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');videos[0].className=\"compact-media-item\";})()");
-        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('compact-media-item');videos[" + i + "].className=\"selected\";})()");
+        myWebView.loadUrl("javascript:(() => {var videos = document.querySelectorAll('ytm-watch .compact-media-item');videos[" + i + "].className=\"selected\";})()");
+
+
+    }
+
+    private void browseSearch(int i) {
+
+        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');videos[0].className=\"compact-media-item\";})()");
+
+        myWebView.loadUrl("javascript:(() => {var videos = document.querySelectorAll('ytm-search .compact-media-item');videos[" + i + "].className=\"selected\";})()");
 
 
     }
 
     private void loadSearch() {
+
+        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";})()");
+
         myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
-                "var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";" +
-                "}, 1000)})()");
-        myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
-                "var videos = document.getElementsByClassName('compact-media-item');videos[0].className=\"selected\";" +
-                "}, 1000)})()");
+                "var videos = document.querySelectorAll('ytm-search .compact-media-item');videos[0].className=\"selected\";" +
+                "}, 1000)})();");
         //myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('item');videos[0].className=\"selected\";})()");
 
-        myWebView.loadUrl("javascript:setTimeout(() => {var videos = document.getElementsByClassName('ytm-compact-video-renderer');" +
+        myWebView.loadUrl("javascript:setTimeout(() => {var videos = document.querySelectorAll('ytm-search .compact-media-item')" +
                 "videos[0].scrollIntoView({" +
                 "behavior: 'smooth'," +
                 "block: 'start'," +
                 "inline: 'nearest'" +
                 "});}, 1000);");
+
+
     }
 
     private void loadRelated() {
-        myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
-                "var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";" +
-                "}, 1000)})()");
-        myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
-                "var videos = document.getElementsByClassName('compact-media-item');videos[0].className=\"selected\";" +
-                "}, 1000)})()");
 
-        myWebView.loadUrl("javascript:setTimeout(() => {var videos = document.getElementsByClassName('ytm-compact-video-renderer');" +
+        //myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
+          //      "var videos = document.getElementsByClassName('compact-media-item');videos[0].className=\"selected\";" +
+            //    "}, 2000)})();");
+        myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
+                "var videos = document.querySelectorAll('ytm-watch .compact-media-item');videos[0].className=\"selected\";" +
+                "}, 1000);})()");
+
+        myWebView.loadUrl("javascript:setTimeout(() => {var videos = var videos = document.querySelectorAll('ytm-watch .compact-media-item');" +
                 "videos[0].scrollIntoView({" +
                 "behavior: 'smooth'," +
                 "block: 'nearest'," +
                 "inline: 'nearest'" +
                 "});}, 1000);");
+
+
+
     }
 
     private void home() {
@@ -405,9 +442,26 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void searchFromSearchResult() {
+        myWebView.loadUrl("javascript: var searchButton = document.getElementsByClassName(\"icon-button \")[2];" +
+                "    searchButton.click();");
+        //"    alert(searchButton[0]);");
+
+
+    }
+
     private void inputText(String text) {
         myWebView.loadUrl("javascript: setTimeout (() => {var textBox = document.getElementsByClassName(\"searchbox-input-wrapper\")[0].firstChild;" +
                 "    textBox.value = '"+ text +"';var searchButton = document.getElementsByClassName(\"icon-button \")[1];" +
+                "    searchButton.click();}, 10);");
+
+
+
+    }
+
+    private void inputTextFromSearchResult(String text) {
+        myWebView.loadUrl("javascript: setTimeout (() => {var textBox = document.getElementsByClassName(\"searchbox-input-wrapper\")[0].firstChild;" +
+                "    textBox.value = '"+ text +"';var searchButton = document.getElementsByClassName(\"icon-button \")[2];" +
                 "    searchButton.click();}, 10);");
 
 
@@ -423,17 +477,24 @@ public class MainActivity extends AppCompatActivity {
                 "    });");
     }
 
-    private void scrollRelatedandSearch(int i) {
+    private void scrollRelated(int i) {
 
-        myWebView.loadUrl("javascript:var videos = document.getElementsByTagName('ytm-compact-video-renderer');" +
+        myWebView.loadUrl("javascript:var videos = document.querySelectorAll('ytm-watch .compact-media-item');" +
                 "videos["+ i + "].scrollIntoView({" +
                 "        behavior: 'smooth'," +
                 "        block: 'nearest'," +
                 "        inline: 'nearest'" +
                 "    });");
+    }
 
+    private void scrollSearch(int i) {
 
-
+        myWebView.loadUrl("javascript:var videos = document.querySelectorAll('ytm-search .compact-media-item');" +
+                "videos["+ i + "].scrollIntoView({" +
+                "        behavior: 'smooth'," +
+                "        block: 'nearest'," +
+                "        inline: 'nearest'" +
+                "    });");
     }
 
     private void checkPageInfo() {
@@ -458,6 +519,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void clearMarkerLarge() {
+        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";})()");
+    }
+
+    private void clearMarkerSmall() {
+        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');videos[0].className=\"compact-media-item\";})()");
+    }
+
 
 
     @JavascriptInterface
@@ -467,13 +536,19 @@ public class MainActivity extends AppCompatActivity {
             pageInfo = info;
 
         }
+        //myWebView.loadUrl("javascript:");
 
     }
 
 
     private void handleCommands(String command) {
         if (searching) {
-            inputText(command);
+            if (!pageInfo.equals("searchResult")) {
+                inputText(command);
+
+            } else {
+                inputTextFromSearchResult(command);
+            }
             searching = false;
             pageInfo = "searchResult";
             mIndex = 0;
@@ -496,17 +571,20 @@ public class MainActivity extends AppCompatActivity {
 
                 } else if (command.contains("再生") || command.contains("さいせい")) {
                     desideHome(mIndex);
+                    clearMarkerLarge();
                     mIndex = 0;
                     pageInfo = "related";
                     loadRelated();
 
                 } else if (command.contains("急上昇") || command.contains("きゅうじょうしょう")) {
                     trending();
+                    clearMarkerLarge();
                     mIndex = 0;
                     pageInfo = "trending";
                     loadHome();
                 } else if (command.contains("検索") || command.contains("けんさく")) {
                     search();
+                    clearMarkerLarge();
                     searching = true;
                 }
                 break;
@@ -522,66 +600,78 @@ public class MainActivity extends AppCompatActivity {
 
                 } else if (command.contains("再生") || command.contains("さいせい")) {
                     desideHome(mIndex);
+                    clearMarkerLarge();
                     mIndex = 0;
                     pageInfo = "related";
+                    loadRelated();
 
                 } else if (command.contains("ホーム") || command.contains("ほーむ")) {
                     home();
+                    clearMarkerLarge();
                     mIndex = 0;
                     pageInfo = "home";
                     loadHome();
                 } else if (command.contains("検索") || command.contains("けんさく")) {
                     search();
+                    clearMarkerLarge();
                     searching = true;
                 }
                 break;
             case "searchResult":
                 if ((command.contains("上") || command.contains("うえ")) && mIndex > 0) {
                     mIndex -= 1;
-                    browseRelatedandSearch(mIndex);
-                    scrollRelatedandSearch(mIndex);
+                    browseSearch(mIndex);
+                    scrollSearch(mIndex);
                 } else if (command.contains("下") || command.contains("した")) {
                     mIndex += 1;
-                    browseRelatedandSearch(mIndex);
-                    scrollRelatedandSearch(mIndex);
+                    browseSearch(mIndex);
+                    scrollSearch(mIndex);
 
                 } else if (command.contains("再生") || command.contains("さいせい")) {
-                    desideRelatedandSearch(mIndex);
+                    desideSearch(mIndex);
+                    clearMarkerSmall();
                     mIndex = 0;
                     pageInfo = "related";
+                    loadRelated();
 
                 } else if (command.contains("ホーム") || command.contains("ほーむ")) {
                     home();
+                    clearMarkerSmall();
                     mIndex = 0;
                     pageInfo = "home";
                     loadHome();
                 } else if (command.contains("検索") || command.contains("けんさく")) {
-                    search();
+                    searchFromSearchResult();
+                    clearMarkerSmall();
                     searching = true;
                 }
                 break;
             case "related":
                 if ((command.contains("上") || command.contains("うえ")) && mIndex > 0) {
                     mIndex -= 1;
-                    browseRelatedandSearch(mIndex);
-                    scrollRelatedandSearch(mIndex);
+                    browseRelated(mIndex);
+                    scrollRelated(mIndex);
                 } else if (command.contains("下") || command.contains("した")) {
                     mIndex += 1;
-                    browseRelatedandSearch(mIndex);
-                    scrollRelatedandSearch(mIndex);
+                    browseRelated(mIndex);
+                    scrollRelated(mIndex);
 
                 } else if (command.contains("再生") || command.contains("さいせい")) {
-                    desideRelatedandSearch(mIndex);
+                    desideRelated(mIndex);
+                    clearMarkerSmall();
                     mIndex = 0;
                     pageInfo = "related";
+                    loadRelated();
 
                 } else if (command.contains("ホーム") || command.contains("ほーむ")) {
                     home();
+                    clearMarkerSmall();
                     mIndex = 0;
                     pageInfo = "home";
                     loadHome();
                 } else if (command.contains("検索") || command.contains("けんさく")) {
                     search();
+                    clearMarkerSmall();
                     searching = true;
                 }
                 break;
