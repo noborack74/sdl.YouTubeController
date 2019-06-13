@@ -358,13 +358,6 @@ public class MainActivity extends AppCompatActivity {
                 "});}, 1000);");
 
 
-
-
-
-        //myWebView.loadUrl("javascript:window.onload = () => {var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";};");
-        //myWebView.loadUrl("javascript:window.onload = () => {var videos = document.getElementsByClassName('item');videos[0].className=\"selected\";};");
-
-
     }
 
     private void browseRelated(int i) {
@@ -405,9 +398,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadRelated() {
 
-        //myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
-          //      "var videos = document.getElementsByClassName('compact-media-item');videos[0].className=\"selected\";" +
-            //    "}, 2000)})();");
         myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
                 "var videos = document.querySelectorAll('ytm-watch .compact-media-item');videos[0].className=\"selected\";" +
                 "}, 1000);})()");
@@ -418,7 +408,6 @@ public class MainActivity extends AppCompatActivity {
                 "block: 'nearest'," +
                 "inline: 'nearest'" +
                 "});}, 1000);");
-
 
 
     }
@@ -437,16 +426,12 @@ public class MainActivity extends AppCompatActivity {
     private void search() {
         myWebView.loadUrl("javascript: var searchButton = document.getElementsByClassName(\"icon-button \")[1];" +
                 "    searchButton.click();");
-                //"    alert(searchButton[0]);");
-
 
     }
 
     private void searchFromSearchResult() {
         myWebView.loadUrl("javascript: var searchButton = document.getElementsByClassName(\"icon-button \")[2];" +
                 "    searchButton.click();");
-        //"    alert(searchButton[0]);");
-
 
     }
 
@@ -536,7 +521,6 @@ public class MainActivity extends AppCompatActivity {
             pageInfo = info;
 
         }
-        //myWebView.loadUrl("javascript:");
 
     }
 
