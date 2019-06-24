@@ -136,8 +136,7 @@ public class MainActivity extends AppCompatActivity {
                     restartListeningService();
                     isListening = true;
 
-                    //checkPageInfo();
-
+                    //trending();
 
                 }
                 return true;
@@ -413,31 +412,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void home() {
-        myWebView.loadUrl("javascript: var homeButton = document.getElementById(\"home-icon\");" +
+        myWebView.loadUrl("javascript: var homeButton = document.getElementById(\"mobile-topbar-header-endpoint\");" +
                 "    homeButton.click();");
     }
 
     private void trending() {
-        myWebView.loadUrl("javascript: var headButtons = document.getElementsByClassName(\"scbrr-tab center\");" +
-                "    headButtons[1].click();");
+        myWebView.loadUrl("javascript: var footerButtons = document.querySelectorAll(\"ytm-pivot-bar-renderer .pivot-bar-item-tab\");" +
+                "    footerButtons[1].click();");
 
     }
 
     private void search() {
-        myWebView.loadUrl("javascript: var searchButton = document.getElementsByClassName(\"icon-button \")[1];" +
+        myWebView.loadUrl("javascript: var searchButton = document.getElementsByClassName(\"icon-button topbar-menu-button-avatar-button\")[0];" +
                 "    searchButton.click();");
 
     }
 
     private void searchFromSearchResult() {
-        myWebView.loadUrl("javascript: var searchButton = document.getElementsByClassName(\"icon-button \")[2];" +
-                "    searchButton.click();");
+        myWebView.loadUrl("javascript: var title = document.getElementsByClassName(\"title mobile-topbar-title\")[0];" +
+                "    title.click();");
 
     }
 
     private void inputText(String text) {
         myWebView.loadUrl("javascript: setTimeout (() => {var textBox = document.getElementsByClassName(\"searchbox-input-wrapper\")[0].firstChild;" +
-                "    textBox.value = '"+ text +"';var searchButton = document.getElementsByClassName(\"icon-button \")[1];" +
+                "    textBox.value = '"+ text +"';var searchButton = document.querySelectorAll(\"ytm-searchbox .icon-button \")[0];" +
                 "    searchButton.click();}, 10);");
 
 
@@ -445,8 +444,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void inputTextFromSearchResult(String text) {
-        myWebView.loadUrl("javascript: setTimeout (() => {var textBox = document.getElementsByClassName(\"searchbox-input-wrapper\")[0].firstChild;" +
-                "    textBox.value = '"+ text +"';var searchButton = document.getElementsByClassName(\"icon-button \")[2];" +
+        myWebView.loadUrl("javascript: setTimeout (() => { " +
+                "var textBox = document.getElementsByClassName(\"searchbox-input-wrapper\")[0].firstChild;" +
+                "    textBox.value = '"+ text +"';var searchButton = document.querySelectorAll(\"ytm-searchbox .icon-button \")[0];" +
                 "    searchButton.click();}, 10);");
 
 
