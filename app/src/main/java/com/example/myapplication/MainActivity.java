@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean searching = false;
     private boolean isFirstTime = true;
 
-    private AudioManager mAudioManager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -313,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
     private void desideTrending(int i) {
 
         myWebView.loadUrl("javascript:" +
-                "var trendingListing = document.querySelectorAll('ytm-browse ytm-section-list-renderer')[1];" +
+                "var trendingListing = document.querySelectorAll('ytm-browse ytm-section-list-renderer')[0];" +
                 "var videos = trendingListing.getElementsByClassName('large-media-item-thumbnail-container');" +
                 "videos["+ i + "].click();");
     }
@@ -354,9 +352,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void browseTrending(int i) {
 
-        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";})()");
+        myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');" +
+                "videos[0].className=\"item\";})()");
         myWebView.loadUrl("javascript:(() => {" +
-                "var trendingListing = document.querySelectorAll('ytm-browse ytm-section-list-renderer')[1];" +
+                "var trendingListing = document.querySelectorAll('ytm-browse ytm-section-list-renderer')[0];" +
                 "var videos = trendingListing.getElementsByClassName('item');" +
                 "videos[" + i + "].className=\"selected\";})()");
 
@@ -397,14 +396,14 @@ public class MainActivity extends AppCompatActivity {
                 "}, 1000)})()");
                 */
         myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
-                "var trendingListing = document.querySelectorAll('ytm-browse ytm-section-list-renderer')[1];" +
+                "var trendingListing = document.querySelectorAll('ytm-browse ytm-section-list-renderer')[0];" +
                 "var videos = trendingListing.querySelectorAll('.item');" +
                 "videos[0].className=\"selected\";" +
                 "}, 1000)})()");
         //myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('item');videos[0].className=\"selected\";})()");
 
         myWebView.loadUrl("javascript:setTimeout(() => {" +
-                "var trendingListing = document.querySelectorAll('ytm-browse ytm-section-list-renderer')[1]" +
+                "var trendingListing = document.querySelectorAll('ytm-browse ytm-section-list-renderer')[0]" +
                 "var videos = trendingListing.getElementsByClassName('large-media-item-thumbnail-container');" +
                 "videos[0].scrollIntoView({" +
                 "behavior: 'smooth'," +
@@ -454,7 +453,8 @@ public class MainActivity extends AppCompatActivity {
     private void loadRelated() {
 
         myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
-                "var videos = document.querySelectorAll('ytm-watch .compact-media-item');videos[0].className=\"selected\";" +
+                "var videos = document.querySelectorAll('ytm-watch .compact-media-item');" +
+                "videos[0].className=\"selected\";" +
                 "}, 1000);})()");
 
         myWebView.loadUrl("javascript:setTimeout(() => {var videos = var videos = document.querySelectorAll('ytm-watch .compact-media-item');" +
@@ -502,10 +502,8 @@ public class MainActivity extends AppCompatActivity {
     private void inputTextFromSearchResult(String text) {
         myWebView.loadUrl("javascript: setTimeout (() => { " +
                 "var textBox = document.getElementsByClassName(\"searchbox-input-wrapper\")[0].firstChild;" +
-                "    textBox.value = '"+ text +"';var searchButton = document.querySelectorAll(\"ytm-searchbox .icon-button \")[0];" +
+                "    textBox.value = '"+ text +"';var searchButton = document.querySelectorAll(\"ytm-searchbox .icon-button \")[1];" +
                 "    searchButton.click();}, 10);");
-
-
 
     }
 
@@ -522,7 +520,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void scrollTrending(int i) {
         myWebView.loadUrl("javascript:" +
-                "var trendingListing = document.querySelectorAll('ytm-browse ytm-section-list-renderer')[1];" +
+                "var trendingListing = document.querySelectorAll('ytm-browse ytm-section-list-renderer')[0];" +
                 "var videos = trendingListing.getElementsByClassName('large-media-item-thumbnail-container');" +
                 "videos["+ i + "].scrollIntoView({" +
                 "        behavior: 'smooth'," +
