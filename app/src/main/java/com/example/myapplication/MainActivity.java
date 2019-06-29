@@ -640,7 +640,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case "trending":
-                if ((command.contains("上") || command.contains("うえ")) && mIndex > 0) {
+                if ((command.contains("上") || command.contains("うえ"))
+                        && mIndex > 0 && !command.contains("急上昇")) {
                     mIndex -= 1;
                     browseTrending(mIndex);
                     scrollTrending(mIndex);
@@ -675,7 +676,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case "searchResult":
-                if ((command.contains("上") || command.contains("うえ")) && mIndex > 0) {
+                if ((command.contains("上") || command.contains("うえ"))
+                        && mIndex > 0 && !command.contains("急上昇")) {
                     mIndex -= 1;
                     browseSearch(mIndex);
                     scrollSearch(mIndex);
