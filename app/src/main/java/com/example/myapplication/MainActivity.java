@@ -364,17 +364,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadHome() {
 
-        /*
-        myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
-                "var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";" +
-                "}, 1000)})()");
-                */
         myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
                 "var homeListing = document.querySelectorAll('ytm-browse ytm-section-list-renderer')[0];" +
                 "var videos = homeListing.querySelectorAll('.item');" +
                 "videos[0].className=\"selected\";" +
                 "}, 1000)})()");
-        //myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('item');videos[0].className=\"selected\";})()");
 
         myWebView.loadUrl("javascript:setTimeout(() => {" +
                 "var homeListing = document.querySelectorAll('ytm-browse ytm-section-list-renderer')[0];" +
@@ -390,17 +384,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadTrending() {
 
-        /*
-        myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
-                "var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";" +
-                "}, 1000)})()");
-                */
         myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
                 "var trendingListing = document.querySelectorAll('ytm-browse ytm-section-list-renderer')[0];" +
                 "var videos = trendingListing.querySelectorAll('.item');" +
                 "videos[0].className=\"selected\";" +
                 "}, 1000)})()");
-        //myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('item');videos[0].className=\"selected\";})()");
 
         myWebView.loadUrl("javascript:setTimeout(() => {" +
                 "var trendingListing = document.querySelectorAll('ytm-browse ytm-section-list-renderer')[0]" +
@@ -433,12 +421,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadSearch() {
 
-        //myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('selected');videos[0].className=\"item\";})()");
-
         myWebView.loadUrl("javascript:(() => {setTimeout(() => {" +
                 "var videos = document.querySelectorAll('ytm-search .compact-media-item');videos[0].className=\"selected\";" +
                 "}, 1000)})();");
-        //myWebView.loadUrl("javascript:(() => {var videos = document.getElementsByClassName('item');videos[0].className=\"selected\";})()");
 
         myWebView.loadUrl("javascript:setTimeout(() => {var videos = document.querySelectorAll('ytm-search .compact-media-item')" +
                 "videos[0].scrollIntoView({" +
